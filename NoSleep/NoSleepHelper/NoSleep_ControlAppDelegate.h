@@ -12,7 +12,7 @@
 
 #import <Sparkle/Sparkle.h>
 
-@interface NoSleep_ControlAppDelegate : NSObject <NSApplicationDelegate, NoSleepNotificationDelegate> {
+@interface NoSleep_ControlAppDelegate : NSObject <NSApplicationDelegate, NoSleepNotificationDelegate, NSMenuDelegate> {
 @private
     IBOutlet NSWindow *window;
     IBOutlet NSMenu *statusItemMenu;

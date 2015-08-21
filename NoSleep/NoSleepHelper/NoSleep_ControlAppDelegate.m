@@ -50,12 +50,13 @@ static void handleSIGTERM(int signum) {
 }
 
 - (void)activateStatusMenu {
-    statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength] retain];
+    statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength] retain];
     
     inactiveImage = [NSImage imageNamed:@"ZzInactive.pdf"];
     [inactiveImage setTemplate:YES];
     activeImage = [NSImage imageNamed:@"ZzActive.pdf"];
-    [activeImage setTemplate:YES];
+    // allow red ACTIVE image in status bar
+    //[activeImage setTemplate:YES];
     
     if ([statusItem respondsToSelector:@selector(button)]) {
         [[statusItem button] setImage:inactiveImage];
@@ -65,6 +66,24 @@ static void handleSIGTERM(int signum) {
     }
 
     [statusItem setMenu:statusItemMenu];
+}
+
+- (void)menuWillOpen:(NSMenu *)menu {
+    const NSUInteger pressedButtonMask = [NSEvent pressedMouseButtons];
+    //const BOOL leftMouseDown = (pressedButtonMask & (1 << 0)) != 0;
+    const BOOL rightMouseDown = (pressedButtonMask & (1 << 1)) != 0;
+
+    // NOTE: using !rightClick b/c first time menu is opened, both left and right click values are 0
+    if (!rightMouseDown) {
+        // toggle active state
+        if([noSleep stateForMode:kNoSleepModeCurrent]) {
+            [self setEnabled:NSOffState];
+        } else {
+            [self setEnabled:NSOnState];
+        }
+        // dismiss menu (prevents it from displaying at all)
+        [menu cancelTracking];
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
@@ -83,7 +102,9 @@ static void handleSIGTERM(int signum) {
     [noSleep setNotificationDelegate:self];
     
     [self activateStatusMenu];
-    
+
+    [statusItemMenu setDelegate:self];
+
     //[self updateSettings];
     
     //NSString *observedObject = [[NSBundle bundleForClass:[self class]] bundleIdentifier];
