@@ -143,14 +143,17 @@ static void handleSIGTERM(int signum) {
 
 - (void)setEnabled:(NSCellStateValue)value {
     NSImage *image;
+    NSString *tooltip;
     BOOL newState;
     
     if(value == NSOnState) {
         newState = YES;
         image = activeImage;
+        tooltip = @"NoSleep ON";
     } else {
         newState = NO;
         image = inactiveImage;
+        tooltip = @"NoSleep OFF";
     }
     
     if(value != [self enabled]) {
@@ -163,6 +166,7 @@ static void handleSIGTERM(int signum) {
     } else {
         [statusItem setImage:image];
     }
+    [statusItem setToolTip:tooltip];
 }
 
 - (void)notificationReceived:(uint32_t)messageType :(void *)messageArgument
